@@ -202,7 +202,7 @@ module GitCommitNotifier
           diff2html.clear_result
 
           text, html = [], []
-          result = diffresult.first
+          result = diffresult.last
           return if result.nil? || !result[:commit_info]
 
           diffresult.each_with_index do |result, i|
