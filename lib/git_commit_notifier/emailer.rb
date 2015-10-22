@@ -245,14 +245,21 @@ class GitCommitNotifier::Emailer
         "Content-Transfer-Encoding: quoted-printable",
         "Content-Disposition: inline",
         "",
-        encode_quoted_printable_message(plaintext),
-        "--#{boundary}",
-        "Content-Type: text/html; charset=utf-8",
-        "Content-Transfer-Encoding: quoted-printable",
-        "Content-Disposition: inline",
-        "",
-        encode_quoted_printable_message(mail_html_message),
-        "--#{boundary}--"]
+        encode_quoted_printable_message(plaintext)]
+
+    if config['skip_html'].nil? || !config['skip_html']
+        content.concat [
+            "--#{boundary}",
+            "Content-Type: text/html; charset=utf-8",
+            "Content-Transfer-Encoding: quoted-printable",
+            "Content-Disposition: inline",
+            "",
+            encode_quoted_printable_message(mail_html_message),
+            "--#{boundary}--"]
+    else
+        content.concat [
+            "--#{boundary}--"]
+    end
 
     if @recipient.empty?
       puts content.join("\n")
