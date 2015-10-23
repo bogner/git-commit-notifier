@@ -655,8 +655,13 @@ module GitCommitNotifier
       @file_changes = []
       text = ""
 
-      html_diff = diff_for_revision(extract_diff_from_git_show_output(raw_diff))
-      message_array = message_array_as_html(changed_files.split("\n"))
+      if config['skip_diff']
+        html_diff = ""
+        message_array = ""
+      else
+        html_diff = diff_for_revision(extract_diff_from_git_show_output(raw_diff))
+        message_array = message_array_as_html(changed_files.split("\n"))
+      end
 
       if show_summary?
         title += "<ul>"
