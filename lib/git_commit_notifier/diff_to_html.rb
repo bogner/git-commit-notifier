@@ -655,19 +655,18 @@ module GitCommitNotifier
       @file_changes = []
       text = ""
 
-      if config['skip_diff']
-        html_diff = ""
-        message_array = ""
-      else
-        html_diff = diff_for_revision(extract_diff_from_git_show_output(raw_diff))
-        message_array = message_array_as_html(changed_files.split("\n"))
-      end
+      html_diff = diff_for_revision(extract_diff_from_git_show_output(raw_diff))
+      message_array = message_array_as_html(changed_files.split("\n"))
 
       if show_summary?
         title += "<ul>"
 
         @file_changes.each do |change|
-          title += "<li><a href=\"\##{change[:file_name]}\">#{change[:text]}</a></li>"
+          if config['skip_diff'].nil? || !config['skip_diff']
+            title += "<li><a href=\"\##{change[:file_name]}\">#{change[:text]}</a></li>"
+          else
+            title += "<li>#{change[:text]}</li>"
+          end
           text += "#{change[:text]}\n"
         end
 
@@ -679,8 +678,10 @@ module GitCommitNotifier
       text += "#{changed_files}\n\n\n"
 
       html = title
-      html += html_diff
-      html += message_array
+      if config['skip_diff'].nil? || !config['skip_diff']
+        html += html_diff
+        html += message_array
+      end
       html += "<br /><br />"
       commit_info[:message] = first_sentence(commit_info[:message])
 
