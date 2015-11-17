@@ -205,6 +205,12 @@ module GitCommitNotifier
           result = diffresult.last
           return if result.nil? || !result[:commit_info]
 
+          # If this is a merge of a single commit, use the message and
+          # authorship from the commit instead of the merge.
+          if merge_commit?(result) and diffresult.size() == 2
+            result = diffresult.first
+          end
+
           diffresult.each_with_index do |result, i|
             text << result[:text_content]
             html << result[:html_content]
